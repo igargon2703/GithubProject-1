@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Alumno;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -23,7 +24,7 @@ class AlumnoController extends Controller
     public function edit(Alumno $alumno): View
     {
         //
-        return view('alumno.edit', ['alumno'=>$alumno]);
+        return view('alumno.edit', ['alumno' => $alumno]);
     }
 
     public function index(): View
@@ -34,12 +35,20 @@ class AlumnoController extends Controller
     public function show(Alumno $alumno): View
     {
         //
-        return view('alumno.show', ['alumno'=>$alumno]);
+        return view('alumno.show', ['alumno' => $alumno]);
     }
 
-    function store(Request $request): RedirectResponse{
+    function store(Request $request): RedirectResponse
+    {
         $alumno = new Alumno($request->all());
-        $alumno->save();
+        try {
+            $alumno->save();
+        } catch (UniqueConstraintViolationException $e) {
+            return back()->withInput();
+        } catch (\Exception $e) {
+            dd($e);
+        }
+
         return redirect()->route('alumno.index');
     }
 
@@ -61,7 +70,7 @@ class AlumnoController extends Controller
 
     public function update(Request $request, Alumno $alumno): RedirectResponse
     {
-        $alumno -> update($request->all());
+        $alumno->update($request->all());
         return redirect()->route('alumno.index');
     }
 }
