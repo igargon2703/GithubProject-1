@@ -16,7 +16,7 @@ return new class extends Migration
             // nombre
             $table->string('nombre', 100);
             // apellido
-            $table->string('apellidos', 130);
+            $table->string('apellido', 130);
             // fecha nacimiento
             $table->date('fnac')->nullable();
             // genero
@@ -24,7 +24,7 @@ return new class extends Migration
             // nota acceso
             $table->decimal('notaacceso', 4, 2)->nullable();
             $table->timestamps();
-            $table->unique(['nombre','apellidos']);
+            $table->unique(['nombre','apellido']);
         });
     }
 
