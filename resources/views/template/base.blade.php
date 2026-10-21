@@ -54,11 +54,21 @@
     <!-- Masthead-->
 
     <header class="masthead bg-primary text-white text-center">
-        @error('error')
+        @error('error') <!-- si llega un mensahe de tipo error con nombre error -->
             <div class="alert alert-danger" role="alert">
                 {{ $message }}
             </div>
         @enderror
+        @session('success') <!-- si llega una variable en la sesion de nombre success -->
+            <div class="row">
+                <div class="col-md-4 mx-auto">
+                    <div class="alert alert-info" role="alert">
+                        {{ session('success') }}
+                    </div>
+                </div>
+            </div>
+        @endsession
+
         @yield('before-content')
         @yield('content')
         @yield('after-content')

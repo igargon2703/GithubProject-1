@@ -19,7 +19,7 @@
                     <div class="mb-3">
                         <label for="apellido" class="form-label">Apellidos</label>
                         <input type="text" value="{{ old('apellido') }}" class="form-control" value="" id="apellido"
-                            name="apellido" required maxlength="130" placeholder="Introduce los apellidos del alumno"> 
+                            name="apellido" required maxlength="130" placeholder="Introduce los apellidos del alumno">
                         @error('apellidos')
                             <div class="alert alert-danger" role="alert" style="margin-top: 6px;">
                                 {{ $message }}

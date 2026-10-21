@@ -13,30 +13,30 @@ class AlumnoController extends Controller
 {
 
     private const RULES = [
-            'nombre' => 'required|string|max:100|min:2',
-            'apellido' => 'required|string|max:130|min:3',
-            'fnac' => 'nullable|date|before_or_equal:today',
-            'notaaceso' => 'nullable|numeric|gte:0|lte:10|decimal:0,2',
-            'genero' => 'nullable|in:masculino,femenino,otro'
-        ];
+        'nombre' => 'required|string|max:100|min:2',
+        'apellido' => 'required|string|max:130|min:3',
+        'fnac' => 'nullable|date|before_or_equal:today',
+        'notaaceso' => 'nullable|numeric|gte:0|lte:10|decimal:0,2',
+        'genero' => 'nullable|in:masculino,femenino,otro'
+    ];
     private const MESSAGES = [
-         
-            'nombre.required' => '',
-            'nombre.string' => '',
-            'nombre.max' => '',
-            'nombre.min' => '',
-            'apellidos.required' => '',
-            'apellidos.string' => '',
-            'apellidos.max' => '',
-            'apellidos.min' => '',
-            'fnac.date' => '',
-            'fnac.before_or_equal' => '',
-            'notaacesso.numeric' => '',
-            'notaacesso.' => '',
-            'notaacesso.' => '',
-            'notaacesso.' => '',
-        ];
-    
+
+        'nombre.required' => '',
+        'nombre.string' => '',
+        'nombre.max' => '',
+        'nombre.min' => '',
+        'apellidos.required' => '',
+        'apellidos.string' => '',
+        'apellidos.max' => '',
+        'apellidos.min' => '',
+        'fnac.date' => '',
+        'fnac.before_or_equal' => '',
+        'notaacesso.numeric' => '',
+        'notaacesso.' => '',
+        'notaacesso.' => '',
+        'notaacesso.' => '',
+    ];
+
     public function create(): View
     {
         //
@@ -45,7 +45,14 @@ class AlumnoController extends Controller
 
     public function destroy(Alumno $alumno): RedirectResponse
     {
-        dd(['destroy', $alumno]);
+        try {
+            $alumno->delete();
+        } catch (\Exception $e) {
+            return back()->withInput()->withErrors(([
+                'error' => 'Error al borrar el alumno.'
+            ]));
+        }
+        return redirect()->route('alumno.index')->with(['success' => 'Se ha borrado el alumno']);
     }
 
     public function edit(Alumno $alumno): View
@@ -56,6 +63,8 @@ class AlumnoController extends Controller
 
     public function index(): View
     {
+        session()->forget('success');
+        $alumnos = Alumno::all();
         return view('alumno.index', ['alumnos' => Alumno::all()]);
     }
 
@@ -85,10 +94,11 @@ class AlumnoController extends Controller
                 //'apellido' => 'Este campo tambien forma parte de la clave unica',
             ]));
         } catch (\Exception $e) {
-            echo('global');
+            echo ('global');
             dd($e);
         }
-
+        //session(['success' => 'Se ha creado el alumno correctamente']);
+        return redirect()->route('alumno.index')->with(['success' => 'Se ha creado el alumno correctamente']);
         return redirect()->route('alumno.index');
     }
 
@@ -110,7 +120,17 @@ class AlumnoController extends Controller
 
     public function update(Request $request, Alumno $alumno): RedirectResponse
     {
-        $alumno->update($request->all());
+        try {
+            $alumno->update($request->all());
+        } catch (UniqueConstraintViolationException $e) {
+            return back()->withInput()->withErrors(([
+                'error' => 'Clave unica duplicada',
+            ]));
+        } catch (\Exception $e) {
+            return back()->withInput()->withErrors(([
+                'error' => 'Error al editar el alumno.'
+            ]));
+        }
         return redirect()->route('alumno.index');
     }
 }
