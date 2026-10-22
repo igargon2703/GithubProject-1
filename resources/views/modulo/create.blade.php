@@ -4,7 +4,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6 mx-auto">
-                <form action="{{ route('profesor.store') }}" method="post">
+                <form action="{{ route('modulo.store') }}" method="post">
                     @csrf
 
                     {{-- Nombre --}}
@@ -71,7 +71,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-secondary">
-                        Crear profesor
+                        Crear modulo
                     </button>
                 </form>
             </div>

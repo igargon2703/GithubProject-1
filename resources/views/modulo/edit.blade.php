@@ -4,12 +4,12 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6 mx-auto">
-                <form action="{{ route('profesor.update', $profesor) }}" method="post">
+                <form action="{{ route('modulo.update', $modulo) }}" method="post">
                     @method('put')
                     @csrf
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" value="{{ old('nombre', $profesor->nombre) }}" id="nombre"
+                        <input type="text" class="form-control" value="{{ old('nombre', $modulo->nombre) }}" id="nombre"
                             name="nombre" required maxlength="100" placeholder="Introduce el nombre del profesor">
                         @error('nombre')
                             <div class="alert alert-danger" role="alert" style="margin-top: 6px;">
@@ -19,7 +19,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="apellido" class="form-label">Apellidos</label>
-                        <input type="text" class="form-control" value="{{ old('apellido', $profesor->apellido) }}"
+                        <input type="text" class="form-control" value="{{ old('apellido', $modulo->apellido) }}"
                             id="apellido" name="apellido" required maxlength="130"
                             placeholder="Introduce los apellidos del profesor">
                         @error('apellidos')
@@ -30,7 +30,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="fnac" class="form-label">Fecha de alta</label>
-                        <input type="date" class="form-control" value="{{ old('falta', $profesor->falta) }}" id="falta"
+                        <input type="date" class="form-control" value="{{ old('falta', $modulo->falta) }}" id="falta"
                             name="falta">
                         @error('falta')
                             <div class="alert alert-danger" role="alert" style="margin-top: 6px;">
@@ -52,7 +52,7 @@
                         <label for="apellido" class="form-label">Especialidad</label>
                         <input type="text" value="{{ old('especialidad') }}" class="form-control" value="" id="especialidad"
                             name="especialidad" required maxlength="130"
-                            placeholder="Introduce la especialidad del profesor">
+                            placeholder="Introduce la especialidad del modulo">
                         @error('especialidad')
                             <div class="alert alert-danger" role="alert" style="margin-top: 6px;">
                                 {{ $message }}
@@ -61,7 +61,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-secondary">
-                        Editar profesor
+                        Editar modulo
                     </button>
                 </form>
             </div>
