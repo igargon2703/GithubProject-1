@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Model\Modulo;
+use App\Models\Modulo;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -15,16 +15,16 @@ class ModuloController extends Controller
      */
     public function index()
     {
-        //$modulos = Modulo::all();
-        $modulos = Modulo::orderBy('nombre');
-        //return view('modulo.index', ['modulos' => $modulos]);
+        // Se añade ->get() para ejecutar la consulta y obtener la colección
+        $modulos = Modulo::orderBy('nombre')->get();
         return view('modulo.index', compact('modulos'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create() {
+    public function create()
+    {
         return view('modulo.create');
     }
 
@@ -34,15 +34,16 @@ class ModuloController extends Controller
     public function store(Request $request)
     {
         $datos = $request->validate([
-            'nombre' => ['required', 'string', 'max:120', ], //'unique:modulo,nombre'
-            'abreviatura' => ['required', 'string', 'max:7', ], //'unique:modulo,abreviatura'
+            'nombre' => ['required', 'string', 'max:120'],
+            'abreviatura' => ['required', 'string', 'max:7'],
             'horas' => ['nullable', 'integer', 'min:0', 'max:15'],
             'creditos' => ['nullable', 'numeric', 'min:0', 'max:99.99'],
         ]);
+
         try {
-            Modulo::create($request->all());
-            //$modulo = new Modulo($request->all());
-            //$modulo->save();
+            // Usamos $datos en lugar de $request->all() para garantizar que solo se guarden campos validados
+            Modulo::create($datos);
+
             return redirect()
                 ->route('modulo.index')
                 ->with('success', 'Módulo creado correctamente.');
@@ -60,9 +61,9 @@ class ModuloController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Modulo $modulo)
     {
-        //a veces falla la conversión
+        // Se cambió el parámetro a Type Hinting (Modulo $modulo) para que el Route Model Binding recupere la instancia
         return view('modulo.show', compact('modulo'));
     }
 
@@ -80,14 +81,17 @@ class ModuloController extends Controller
     public function update(Request $request, Modulo $modulo)
     {
         $datos = $request->validate([
-                'nombre' => ['required','string','max:120'],
-                'abreviatura' => ['required','string','max:7'],
-                'horas' => ['nullable', 'integer', 'min:0', 'max:15'],
-                'creditos' => ['nullable', 'numeric', 'min:0', 'max:99.99'],
-            ]);
+            'nombre' => ['required', 'string', 'max:120'],
+            'abreviatura' => ['required', 'string', 'max:7'],
+            'horas' => ['nullable', 'integer', 'min:0', 'max:15'],
+            'creditos' => ['nullable', 'numeric', 'min:0', 'max:99.99'],
+        ]);
+
         try {
             $modulo->update($datos);
-            return redirect
+
+            // Se corrigió redirect -> por redirect()
+            return redirect()
                 ->route('modulo.index')
                 ->with('success', 'Módulo actualizado correctamente.');
         } catch (QueryException $e) {
@@ -97,7 +101,7 @@ class ModuloController extends Controller
         } catch (Exception $e) {
             return back()
                 ->withInput()
-                ->withErrors(['error' =>'Se produjo un error al actualizar el módulo.']);
+                ->withErrors(['error' => 'Se produjo un error al actualizar el módulo.']);
         }
     }
 
@@ -108,6 +112,7 @@ class ModuloController extends Controller
     {
         try {
             $modulo->delete();
+
             return redirect()
                 ->route('modulo.index')
                 ->with('success', 'Módulo eliminado correctamente.');
@@ -118,4 +123,3 @@ class ModuloController extends Controller
         }
     }
 }
-
