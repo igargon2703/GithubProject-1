@@ -12,8 +12,9 @@ return new class extends Migration
             $table->id();
             $table->string('nombre');
             $table->string('apellido');
-            $table->date('fnac');
-            $table->string('genero');
+            $table->date('falta');
+            $table->string('especialidad');
+            $table->decimal('salario', 10, 2);
             $table->timestamps();
         });
     }

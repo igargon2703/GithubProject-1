@@ -1,138 +1,115 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Validator;
-
 use App\Models\Profesor;
 
 class ProfesorController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-
     private const RULES = [
-        'nombre' => 'required|string|max:100|min:2',
-        'apellido' => 'required|string|max:130|min:3',
-        'fnac' => 'nullable|date|before_or_equal:today',
-        'genero' => 'nullable|in:masculino,femenino,otro'
+        'nombre'       => 'required|string|min:2|max:100',
+        'apellido'     => 'required|string|min:3|max:130',
+        'falta'        => 'required|date|before_or_equal:today', // Corregido: 'required' en vez de 'nullable'
+        'salario'      => 'required|numeric|gte:0|decimal:0,2',   // Corregido: Eliminado 'lte:10'
+        'especialidad' => 'required|string|min:2|max:100'
     ];
 
     private const MESSAGES = [
-
-        'nombre.required' => '',
-        'nombre.string' => '',
-        'nombre.max' => '',
-        'nombre.min' => '',
-        'apellidos.required' => '',
-        'apellidos.string' => '',
-        'apellidos.max' => '',
-        'apellidos.min' => '',
-        'fnac.date' => '',
-        'fnac.before_or_equal' => '',
+        'nombre.required'       => 'El nombre es obligatorio.',
+        'nombre.min'            => 'El nombre debe tener al menos 2 caracteres.',
+        'apellido.required'     => 'El apellido es obligatorio.',
+        'apellido.min'          => 'El apellido debe tener al menos 3 caracteres.',
+        'falta.required'        => 'La fecha de falta es obligatoria.',
+        'falta.date'            => 'La fecha debe tener un formato válido.',
+        'falta.before_or_equal' => 'La fecha no puede ser posterior a hoy.',
+        'salario.required'      => 'El salario es obligatorio.',
+        'salario.numeric'       => 'El salario debe ser un número.',
+        'salario.gte'           => 'El salario no puede ser negativo.',
+        'especialidad.required' => 'La especialidad es obligatoria.',
     ];
-
 
     public function index(): View
     {
         session()->forget('success');
-        $profesores = Profesor::all();
         return view('profesor.index', ['profesores' => Profesor::all()]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create(): View
     {
-        //
-        return view('profesor.create', []);
+        return view('profesor.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
-        //1º validar
-
         $validator = Validator::make($request->all(), self::RULES, self::MESSAGES);
 
         if ($validator->fails()) {
             return back()->withInput()->withErrors($validator);
         }
 
-        $profesor = new Profesor($request->all());
         try {
-            $profesor->save();
+            Profesor::create($request->all());
         } catch (UniqueConstraintViolationException $e) {
-            return back()->withInput()->withErrors(([
-                'error' => 'Clave unica duplicada',
-                //'nombre' => 'Este campo forma parte de la clave unica.',
-                //'apellido' => 'Este campo tambien forma parte de la clave unica',
-            ]));
+            return back()->withInput()->withErrors([
+                'error' => 'Clave única duplicada.',
+            ]);
         } catch (\Exception $e) {
-            echo ('global');
-            dd($e);
+            return back()->withInput()->withErrors([
+                'error' => 'Ocurrió un error al guardar el profesor: ' . $e->getMessage()
+            ]);
         }
-        //session(['success' => 'Se ha creado el alumno correctamente']);
-        return redirect()->route('profesor.index')->with(['success' => 'Se ha creado el profesor correctamente']);
-        return redirect()->route('profesor.index');
+
+        return redirect()->route('profesor.index')->with('success', 'Se ha creado el profesor correctamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Profesor $profesor): View
     {
-        //
         return view('profesor.show', ['profesor' => $profesor]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Profesor $profesor): View
     {
-        //
         return view('profesor.edit', ['profesor' => $profesor]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Profesor $profesor): RedirectResponse
     {
+        $validator = Validator::make($request->all(), self::RULES, self::MESSAGES);
+
+        if ($validator->fails()) {
+            return back()->withInput()->withErrors($validator);
+        }
+
         try {
             $profesor->update($request->all());
         } catch (UniqueConstraintViolationException $e) {
-            return back()->withInput()->withErrors(([
-                'error' => 'Clave unica duplicada',
-            ]));
+            return back()->withInput()->withErrors([
+                'error' => 'Clave única duplicada.',
+            ]);
         } catch (\Exception $e) {
-            return back()->withInput()->withErrors(([
-                'error' => 'Error al editar el alumno.'
-            ]));
+            return back()->withInput()->withErrors([
+                'error' => 'Error al editar el profesor.'
+            ]);
         }
-        return redirect()->route('profesor.index');
+
+        return redirect()->route('profesor.index')->with('success', 'Profesor actualizado correctamente.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Profesor $profesor): RedirectResponse
     {
         try {
             $profesor->delete();
         } catch (\Exception $e) {
-            return back()->withInput()->withErrors(([
+            return back()->withInput()->withErrors([
                 'error' => 'Error al borrar el profesor.'
-            ]));
+            ]);
         }
-        return redirect()->route('profesor.index')->with(['success' => 'Se ha borrado el profesor']);
+
+        return redirect()->route('profesor.index')->with('success', 'Se ha borrado el profesor correctamente.');
     }
 }
