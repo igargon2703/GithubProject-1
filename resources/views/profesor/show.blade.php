@@ -24,8 +24,9 @@
         <div class="col-12 col-md-6">
             <div class="card text-center">
                 <div class="card-body">
-                    <h6 class="card-title">{{\Carbon\Carbon::parse($profesor->fnac)->locale('es')->translatedFormat('d/m/Y')}}</h6>
-                    <h6 class="card-title">{{$profesor->genero}}</h6>
+                    <h6 class="card-title">{{\Carbon\Carbon::parse($profesor->falta)->locale('es')->translatedFormat('d/m/Y')}}</h6>
+                    <h6 class="card-title">{{$profesor->salario}}</h6>
+                    <h6 class="card-title">{{$profesor->especialidad}}</h6>
                     <a href="{{route('profesor.index')}}"class="btn btn-secondary">BACK</a>
                 </div>
             </div>

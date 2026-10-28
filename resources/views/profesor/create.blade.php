@@ -14,7 +14,7 @@
                             value="{{ old('nombre') }}" required maxlength="100" 
                             placeholder="Introduce el nombre del profesor">
                         @error('nombre')
-                            <div class="alert alert-danger role="alert" style="margin-top: 6px;">
+                            <div class="alert alert-danger" role="alert" style="margin-top: 6px;">
                                 {{ $message }}
                             </div>
                         @enderror
